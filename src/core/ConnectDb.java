@@ -8,9 +8,9 @@ public class ConnectDb {
 
     private Connection connection = null;
     private static ConnectDb instance = null;
-    private final String DB_URL = "jdbc:postgresql://localhost:5431/deneme";
-    private final String DB_USERNAME = "postgres";
-    private final String DB_PASSWORD = "changeme";
+    private final String DB_URL = "db_host";
+    private final String DB_USERNAME = "usernamae";
+    private final String DB_PASSWORD = "password";
 
     private ConnectDb(){
         try {

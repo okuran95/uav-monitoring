@@ -15,7 +15,6 @@ import java.util.Objects;
 public class UavService {
 
     private final UavDaoInterface uavDao;
-    private final String format = "#.#####";
 
     public UavService() {
         this.uavDao = new MockUavDao();
