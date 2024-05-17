@@ -1,6 +1,6 @@
 UAV Monitoring App
 
-Java 21
+JDK 21
 
 Postgresql (Optional)
 
