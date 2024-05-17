@@ -30,7 +30,7 @@ public class UavService {
 
     public Boolean save(String code, String latitude, String longitude, String altitude, String speed, String battery) throws ValidationException, SQLException {
 
-        saveValidation(code, latitude, longitude, altitude, speed, battery);
+        saveNullValidation(code, latitude, longitude, altitude, speed, battery);
 
         double validatedSpeed = Double.parseDouble(speed);
         double validatedBattery = Double.parseDouble(battery);
@@ -42,6 +42,14 @@ public class UavService {
                 || !ValidationHelper.isValidLongitude(validatedLongitude)
                 || !ValidationHelper.isValidLongitude(validatedAltitude)) {
             throw new ValidationException("Coğrafi Konum uygun formatta değil");
+        }
+
+        if (validatedSpeed > 5 || validatedSpeed < 0) {
+            throw new ValidationException("Hız değeri 0-5 arasında olmalıdır");
+        }
+
+        if (validatedBattery > 100 || validatedBattery <= 0) {
+            throw new ValidationException("Batarya değeri 0-100 arasında olmalıdır");
         }
 
         Position position = new Position();
@@ -64,7 +72,7 @@ public class UavService {
 
         Objects.requireNonNull(id);
 
-        saveValidation(code, latitude, longitude, altitude, speed, battery);
+        saveNullValidation(code, latitude, longitude, altitude, speed, battery);
 
         double validatedSpeed = Double.parseDouble(speed);
         double validatedBattery = Double.parseDouble(battery);
@@ -77,6 +85,15 @@ public class UavService {
                 || !ValidationHelper.isValidLongitude(validatedAltitude)) {
             throw new ValidationException("Coğrafi Konum uygun formatta değil");
         }
+
+        if (validatedSpeed > 5 || validatedSpeed < 0) {
+            throw new ValidationException("Hız değeri 0-5 arasında olmalıdır");
+        }
+
+        if (validatedBattery > 100 || validatedBattery <= 0) {
+            throw new ValidationException("Batarya değeri 0-100 arasında olmalıdır");
+        }
+
         //todo:transactional!
         Uav uav = this.uavDao.getById(id);
         uav.getGeoPosition().update(validatedLatitude, validatedLongitude, validatedAltitude);
@@ -133,7 +150,7 @@ public class UavService {
 
     }
 
-    private void saveValidation(String code, String latitude, String longitude, String altitude, String speed, String battery)
+    private void saveNullValidation(String code, String latitude, String longitude, String altitude, String speed, String battery)
             throws ValidationException {
         if (ValidationHelper.isBlank(code)) {
             throw new ValidationException("Kod boş olamaz!");
