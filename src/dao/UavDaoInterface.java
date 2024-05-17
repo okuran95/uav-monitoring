@@ -33,6 +33,5 @@ public interface UavDaoInterface {
     void finishFlight(int id, LocalDateTime datetime);
     
     List<Uav> getAllByNotEmptyBattariesAndFligth();
-    // Diğer gerekli metodlar eklenebilir
 }
 

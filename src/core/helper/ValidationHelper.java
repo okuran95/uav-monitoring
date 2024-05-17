@@ -27,12 +27,10 @@ public class ValidationHelper {
         }
     }
 
-    // Enlem değerinin geçerli olup olmadığını kontrol eder
     public static boolean isValidLatitude(double latitude) {
         return latitude >= -90.0 && latitude <= 90.0;
     }
 
-    // Boylam değerinin geçerli olup olmadığını kontrol eder
     public static boolean isValidLongitude(double longitude) {
         return longitude >= -180.0 && longitude <= 180.0;
     }

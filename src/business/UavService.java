@@ -4,7 +4,7 @@ import core.helper.Generator;
 import core.ValidationException;
 import core.helper.ValidationHelper;
 import dao.MockUavDao;
-import dao.UavDao;
+import dao.UavDaoInterface;
 import entity.Position;
 import entity.Uav;
 import java.sql.SQLException;
@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class UavService {
 
-    private final MockUavDao uavDao;
+    private final UavDaoInterface uavDao;
     private final String format = "#.#####";
 
     public UavService() {
@@ -31,29 +31,17 @@ public class UavService {
 
     public Boolean save(String code, String latitude, String longitude, String altitude, String speed, String battery) throws ValidationException, SQLException {
 
-        if (ValidationHelper.isBlank(code)) {
-            throw new ValidationException("Kod boş olamaz!");
-        }
-
-        if (ValidationHelper.isBlank(latitude) || ValidationHelper.isBlank(longitude) || ValidationHelper.isBlank(altitude)) {
-            throw new ValidationException("Coğrafi Konum boş olamaz");
-        }
-
-        if (ValidationHelper.isBlank(speed)) {
-            throw new ValidationException("Hız boş olamaz");
-        }
-
-        if (ValidationHelper.isBlank(battery)) {
-            throw new ValidationException("Batarya boş olamaz");
-        }
+        saveValidation(code, latitude, longitude, altitude, speed, battery);
 
         double validatedSpeed = Double.parseDouble(speed);
         double validatedBattery = Double.parseDouble(battery);
         double validatedLatitude = Double.parseDouble(latitude);
         double validatedLongitude = Double.parseDouble(longitude);
         double validatedAltitude = Double.parseDouble(altitude);
-        //altitude içinde validasyon ekle
-        if (!ValidationHelper.isValidLatitude(validatedAltitude) || !ValidationHelper.isValidLongitude(validatedLongitude)) {
+
+        if (!ValidationHelper.isValidLatitude(validatedAltitude)
+                || !ValidationHelper.isValidLongitude(validatedLongitude)
+                || !ValidationHelper.isValidLongitude(validatedAltitude)) {
             throw new ValidationException("Coğrafi Konum uygun formatta değil");
         }
 
@@ -77,32 +65,20 @@ public class UavService {
 
         Objects.requireNonNull(id);
 
-        if (ValidationHelper.isBlank(code)) {
-            throw new ValidationException("Kod boş olamaz!");
-        }
-
-        if (ValidationHelper.isBlank(latitude) || ValidationHelper.isBlank(longitude) || ValidationHelper.isBlank(altitude)) {
-            throw new ValidationException("Coğrafi Konum boş olamaz");
-        }
-
-        if (ValidationHelper.isBlank(speed)) {
-            throw new ValidationException("Hız boş olamaz");
-        }
-
-        if (ValidationHelper.isBlank(battery)) {
-            throw new ValidationException("Batarya boş olamaz");
-        }
+        saveValidation(code, latitude, longitude, altitude, speed, battery);
 
         double validatedSpeed = Double.parseDouble(speed);
         double validatedBattery = Double.parseDouble(battery);
         double validatedLatitude = Double.parseDouble(latitude);
         double validatedLongitude = Double.parseDouble(longitude);
         double validatedAltitude = Double.parseDouble(altitude);
-        //altitude içinde validasyon ekle
-        if (!ValidationHelper.isValidLatitude(validatedAltitude) || !ValidationHelper.isValidLongitude(validatedLongitude) || !ValidationHelper.isValidLongitude(validatedAltitude)) {
+
+        if (!ValidationHelper.isValidLatitude(validatedAltitude)
+                || !ValidationHelper.isValidLongitude(validatedLongitude)
+                || !ValidationHelper.isValidLongitude(validatedAltitude)) {
             throw new ValidationException("Coğrafi Konum uygun formatta değil");
         }
-        //todo:transactional ekle.
+        //todo:transactional!
         Uav uav = this.uavDao.getById(id);
         uav.getGeoPosition().update(validatedLatitude, validatedLongitude, validatedAltitude);
 
@@ -137,10 +113,10 @@ public class UavService {
         }
         this.uavDao.updateAllBatteries(uavs);
     }
-    
-    public void stop(int id){
+
+    public void stop(int id) {
         LocalDateTime now = LocalDateTime.now();
-        this.uavDao.finishFlight(id,now);
+        this.uavDao.finishFlight(id, now);
     }
 
     public void createMockData() {
@@ -148,14 +124,33 @@ public class UavService {
             Uav uav = new Uav(
                     1,
                     Generator.stringGenerate(),
-                    Generator.doubleGenerate(0.0 ,100.0,1),
+                    Generator.doubleGenerate(0.0, 100.0, 1),
                     Generator.coordinateGenerate(),
-                    Generator.doubleGenerate(0,5.0,1),
+                    Generator.doubleGenerate(0, 5.0, 1),
                     LocalDateTime.now(),
                     null
             );
             this.uavDao.save(uav);
         }
 
+    }
+
+    private void saveValidation(String code, String latitude, String longitude, String altitude, String speed, String battery)
+            throws ValidationException {
+        if (ValidationHelper.isBlank(code)) {
+            throw new ValidationException("Kod boş olamaz!");
+        }
+
+        if (ValidationHelper.isBlank(latitude) || ValidationHelper.isBlank(longitude) || ValidationHelper.isBlank(altitude)) {
+            throw new ValidationException("Coğrafi Konum boş olamaz");
+        }
+
+        if (ValidationHelper.isBlank(speed)) {
+            throw new ValidationException("Hız boş olamaz");
+        }
+
+        if (ValidationHelper.isBlank(battery)) {
+            throw new ValidationException("Batarya boş olamaz");
+        }
     }
 }

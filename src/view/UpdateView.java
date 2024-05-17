@@ -5,12 +5,10 @@
 package view;
 
 import business.UavService;
-import core.ValidationException;
 import core.helper.InputHelper;
 import entity.Uav;
 import java.awt.Color;
 import java.awt.Toolkit;
-import java.sql.SQLException;
 
 /**
  *
@@ -19,9 +17,10 @@ import java.sql.SQLException;
 public class UpdateView extends javax.swing.JFrame {
 
     private final UavService uavService;
-    private int id;
+    private final int id;
     /**
      * Creates new form SaveView
+     * @param id
      */
     public UpdateView(int id) {
         initComponents();
@@ -263,10 +262,7 @@ public class UpdateView extends javax.swing.JFrame {
         try {
             uavService.update(this.id, code, latitude, longitude, altitude, speed, battery);
             this.dispose();
-        } catch (ValidationException ex) {
-            lblDescription.setForeground(Color.red);
-            lblDescription.setText(ex.getMessage());
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             lblDescription.setForeground(Color.red);
             lblDescription.setText(ex.getMessage());
         }

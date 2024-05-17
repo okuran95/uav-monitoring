@@ -39,7 +39,7 @@ public class ListingView extends javax.swing.JFrame {
 
     DefaultTableModel model;
     private UavService uavService;
-    String asd;
+    String columnName;
     SortOrder sortOrder;
 
     /**
@@ -65,11 +65,11 @@ public class ListingView extends javax.swing.JFrame {
                 if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
                     List<? extends RowSorter.SortKey> sortKeys = sorter.getSortKeys();
                     if (!sortKeys.isEmpty()) {
-                        RowSorter.SortKey sortKey = sortKeys.get(0); // İlk sıralama anahtarını alalım
+                        RowSorter.SortKey sortKey = sortKeys.get(0);
 
-                        int columnIndex = sortKey.getColumn(); // Sıralama yapılan sütunun indeksini alalım
-                        asd = tblUav.getColumnName(columnIndex);
-                        if (asd != null) {
+                        int columnIndex = sortKey.getColumn();
+                        columnName = tblUav.getColumnName(columnIndex);
+                        if (columnName != null) {
                             changeSorting();
                             populate();
                         }
@@ -83,18 +83,13 @@ public class ListingView extends javax.swing.JFrame {
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                // Hücrenin değerini al
                 Object cellValue = table.getValueAt(row, 3);
-                Boolean isFly = (Boolean) table.getValueAt(row, 6);
+                Double battery = Double.valueOf(cellValue.toString());
 
-                // Hücrenin değerini sayıya dönüştür
-                Double age = Double.parseDouble(cellValue.toString());
-
-                // Koşula göre arka plan rengini ayarla
-                if (age < 25) {
-                    setBackground(Color.ORANGE); // Yaş 30'dan küçükse turuncu yap
+                if (battery < 25) {
+                    setBackground(Color.ORANGE);
                 } else {
-                    setBackground(Color.WHITE); // Diğer durumlarda beyaz yap
+                    setBackground(Color.WHITE);
                 }
 
                 return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -105,33 +100,25 @@ public class ListingView extends javax.swing.JFrame {
             tblUav.getColumnModel().getColumn(i).setCellRenderer(renderer);
         }
 
-        // Timer oluşturma (her 1 saniyede bir)
-        Timer timer = new Timer(1000, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Timer her tetiklendiğinde yapılacak işlemler
-                for (int row = 0; row < model.getRowCount(); row++) {
-                    LocalTime value = (LocalTime) model.getValueAt(row, 5);
-                    Boolean status = (Boolean) model.getValueAt(row, 6);
-                    if (status && value.getHour() < 5) {
-                        model.setValueAt(value.plusSeconds(1L), row, 5);
-                    }
-                    //} else {
-
-                    //  model.setValueAt(false, row, 6);
-                    //}
+        Timer timer = new Timer(1000, (ActionEvent e) -> {
+            for (int row = 0; row < model.getRowCount(); row++) {
+                LocalTime value = (LocalTime) model.getValueAt(row, 5);
+                Boolean status = (Boolean) model.getValueAt(row, 6);
+                if (status && value.getHour() < 5) {
+                    model.setValueAt(value.plusSeconds(1L), row, 5);
                 }
             }
         });
-        timer.start();
 
         Timer batteryTimer = new Timer(60000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Timer her tetiklendiğinde yapılacak işlemler
                 uavService.reduceBatteryPercantage();
                 populate();
 
             }
         });
+
+        timer.start();
         batteryTimer.start();
 
     }
@@ -156,23 +143,18 @@ public class ListingView extends javax.swing.JFrame {
             }
         }
 
-        if (asd != null) {
+        if (columnName != null) {
             Comparator<Uav> comparator = null;
-
-            if (asd == "Kod") {
-                comparator = Comparator.comparing(Uav::getCode);
-            } else if (asd == "Id") {
-                comparator = Comparator.comparingInt(Uav::getId);
-            } else if (asd == "Lokasyon") {
-                comparator = Comparator.comparing(Uav -> Uav.getGeoPosition().getAsString());
-            } else if (asd == "Batarya Durumu") {
-                comparator = Comparator.comparingDouble(Uav::getBatteryPercentage);
-            } else if (asd == "Hız") {
-                comparator = Comparator.comparingDouble(Uav::getSpeed);
-            } else if (asd == "Uçuş Süresi") {
-                comparator = Comparator.comparing(Uav::getDuration);
-            } else if (asd == "Uçuş Durumu") {
-                comparator = Comparator.comparing(Uav::getFlightStatus);
+            switch (columnName) {
+                case "Kod" -> comparator = Comparator.comparing(Uav::getCode);
+                case "Id" -> comparator = Comparator.comparingInt(Uav::getId);
+                case "Lokasyon" -> comparator = Comparator.comparing(Uav -> Uav.getGeoPosition().getAsString());
+                case "Batarya Durumu" -> comparator = Comparator.comparingDouble(Uav::getBatteryPercentage);
+                case "Hız" -> comparator = Comparator.comparingDouble(Uav::getSpeed);
+                case "Uçuş Süresi" -> comparator = Comparator.comparing(Uav::getDuration);
+                case "Uçuş Durumu" -> comparator = Comparator.comparing(Uav::getFlightStatus);
+                default -> {
+                }
             }
 
             if (sortOrder == SortOrder.DESCENDING) {

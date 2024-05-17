@@ -4,16 +4,6 @@ import core.helper.Numbers;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-
-/*
-·         uavId: [1-2000] integer - unique – İHA Id (otomatik atama yapılabilir)
-·         uavCode: 32 Karakter String – İHA Görünen Adı
-·         uavBattaryPercentage: 0-100% – İHA Batarya Doluluk Oranı – Girilen değer her dakika ortalama olarak 0.2% azaltılacaktır
-·         uavGeoPosition: Lat/Long/Alt – İHA Kalkış Pozisyonu
-·         uavSpeed: 0.1 – 5.0 m/sec – İHA Yatay Hız Bilgisi – Verilen aralıkta herhangi bir değer alabilir
-·         uavTotalFlightTime: 0 - 5h – hh:mm:sec - İHA Toplam Uçuş Süresi – El ile giriş kabul edilmeyecektir.
-Kayıt oluşturulduğu andan itibaren saniye hassasiyetinde otomatik arttırılacaktır.
- */
 public class Uav {
 
     private int id;
@@ -77,11 +67,6 @@ public class Uav {
         this.speed = speed;
     }
 
-    /*
-    public Double getSpeed() {
-        return speed;
-    }
-     */
     public LocalDateTime getFlightStartedTime() {
         return flightStartedTime;
     }

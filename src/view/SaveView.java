@@ -17,7 +17,7 @@ import java.sql.SQLException;
  */
 public class SaveView extends javax.swing.JFrame {
 
-    private UavService uavService;
+    private final UavService uavService;
 
     /**
      * Creates new form SaveView
@@ -249,10 +249,7 @@ public class SaveView extends javax.swing.JFrame {
         try {
             uavService.save(code, latitude, longitude, altitude, speed, battery);
             this.dispose();
-        } catch (ValidationException ex) {
-            lblDescription.setForeground(Color.red);
-            lblDescription.setText(ex.getMessage());
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             lblDescription.setForeground(Color.red);
             lblDescription.setText(ex.getMessage());
         }
