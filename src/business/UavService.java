@@ -39,7 +39,7 @@ public class UavService {
         double validatedLongitude = Double.parseDouble(longitude);
         double validatedAltitude = Double.parseDouble(altitude);
 
-        if (!ValidationHelper.isValidLatitude(validatedAltitude)
+        if (!ValidationHelper.isValidLatitude(validatedLatitude)
                 || !ValidationHelper.isValidLongitude(validatedLongitude)
                 || !ValidationHelper.isValidLongitude(validatedAltitude)) {
             throw new ValidationException("Coğrafi Konum uygun formatta değil");
@@ -94,7 +94,6 @@ public class UavService {
     }
 
     public void reduceBatteryPercantage() {
-        System.out.print("çalıştı");
         List<Uav> uavs = this.uavDao.getAllByNotEmptyBattariesAndFligth();
         LocalDateTime now = LocalDateTime.now();
         for (Uav uav : uavs) {
